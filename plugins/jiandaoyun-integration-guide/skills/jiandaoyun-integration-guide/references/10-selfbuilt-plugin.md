@@ -1,6 +1,6 @@
 # 自建插件
 
-> 来源：简道云官方文档（hc.jiandaoyun.com），提取日期 2026-09-10。以下为原文摘录，参数细节以官方页面为准。
+> 来源：简道云官方文档（hc.jiandaoyun.com），提取日期 2026-09-10（「代码设计」triggerContext 一节按 2026-10-12 版更新）。以下为原文摘录，参数细节以官方页面为准。
 
 
 ---
@@ -1081,7 +1081,16 @@ ID:
 
 4.1.3 triggerContext 结构
 
-triggerContext 中存储了运行环境的基本信息，如简道云的开放 API 域名等。
+triggerContext 中存储了运行环境的基本信息，如简道云的开放 API 域名等。详细信息如下所示：
+
+| 字段 | 含义 |
+|---|---|
+| openApiEndpoint | 插件回调简道云 OpenAPI 的公网地址 |
+| tenantId | 发起调用的租户 ID，可用于租户级配置和隔离 |
+| traceId | 简道云调用链的追踪 ID，可与日志关联排查问题 |
+| pluginId | 被调用的插件 ID |
+| functionId | 被调用的插件函数标识 |
+| plan | 调用时租户的套餐和分类枚举：free：免费，含付费套餐彻底过期；trial：试用中；paid：付费。 |
 
 4.2 内置库支持列表
 
