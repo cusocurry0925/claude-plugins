@@ -26,7 +26,7 @@
 - **流程节点的版本绑定**：进行中的流程实例按发起时的流程版本走，改了节点（如关掉「手写签名 / 操作意见必填」）只对之后发起的单据生效。
 - 新建表单若要走审批，除了 workflow/create + update 启用版本，还必须 `form/update {hasFlow:true}`（见 endpoints），否则提交即视为流转完成。
 - **拦截保存请求时不要 `abort()`**：被中止的请求不会回调，设计器「保存」按钮会一直转圈、页面卡死且离开时被 beforeunload 拦下。校验不通过时应还原改动后照常发送（等于原样提交）。
-- **Chrome 截图坐标 ≠ 点击坐标**：高 DPR 下截图里的页面可能只占画面一部分。点击坐标 = 页面 clientX × (1568 / innerWidth)；用 JS `getBoundingClientRect()` 算，别按截图目测。可先挂 `mousedown` 捕获监听做一次校准。
+- **截图坐标 ≠ 页面坐标**（内置浏览器 2026-10-23 实测）：`computer` 的坐标按最近一次截图报告的「coordinate frame」（如 800×643），页面 `clientX = 坐标 × innerWidth / frame 宽`（实测 innerWidth 1120 → ×1.4，纵向同比例）。反过来点某元素：坐标 = `getBoundingClientRect()` 中心 × frame 宽 / innerWidth。能拿到 `ref` 就用 `ref` 点（落在元素正中），别按截图目测。坐标点击和 `ref` 点击都是真实鼠标事件（`isTrusted:true`），可用于「JS 派发事件无效」的场景；拿不准时先挂 `mousedown` 捕获监听（`preventDefault` 吞掉事件）校准一次。
 
 ## 开放 API v5
 - 子表单更新：只传行 `_id` + 部分字段会**清空该行其余字段**——必须整行回写（读出整行，改值后带 `_id` 回传）。
@@ -39,11 +39,17 @@
 - 自建插件调试页：请求最外层键是 `auth_conf` / `agent_conf` / `trigger_conf`，通用参数不会自动带入，缺 apiKey 报 17020。
 - 自建插件导入包只支持 text 入参 + any 出参；子表单 / 数字入参、object[] 出参会导致预览报「开放平台服务调用失败」，导入后手工补建。单函数 72KB 代码可导入。
 
-## Chrome 工具
-- JS 输出约 2KB；含 `=` `&` `?` / URL / Cookie 样式字符串会被拦截。
-- 单次执行 45 秒超时；页面跳转会清空 `window` 变量。
+## 内置浏览器工具（2026-10-23 实测）
+- `javascript_tool` 返回 7KB 以上不截断；含 `=` `&` `?` / URL 的输出不拦截。CSRF 令牌、apiKey 仍绝不输出。
+- 单次执行 45 秒超时，超时后脚本可能仍在页面里运行；页面刷新 / 跳转会清空 `window` 变量，`sessionStorage` 保留。
+- 每个调用都带自己的 `tabId`；不带时作用于当前前台标签，可能是用户的页面。
+- `preview_start` 不会新开标签：每次都把固定的 `seed` 标签跳到新 URL 并切到前台。新开标签用 `tabs_create`（返回 `tab-1` 这类 ID）再 `navigate {url, tabId}`。
+- 未登录时 `www.jiandaoyun.com/dashboard` 会跳到 `portal.finecloud.com/portal/signin`；登录由用户在 Browser 面板里完成。
+- 工作台刚加载时应用链接还没渲染（实测刷新后立即读到 0 个链接），R0 里要等链接出现再读。
 - `navigate` 只改 hash 时页面不刷新，网络记录不会重置。
-- `read_network_requests` 只给响应体，要看请求体需自装 XHR 记录器（pass-through，记录 `body` 与 `responseText`）。
+- `read_network_requests` 列表只有方法、URL、状态；按 `requestId` 取响应体。要看请求体需自装 XHR 记录器（pass-through，记录 `body` 与 `responseText`）。页面加载早于登录跳转完成时，部分请求可能不在列表里，必要时刷新页面再读。
+
+## 前端事件、插件与助手
 - **前端事件（调用插件）只把 `request_rely` 里的字段值发给服务端**：用 R3 给 `formEvents[].request.assignments` 新增主表字段参数时，必须同时把该字段 widgetName 加进 `request_rely`，否则插件收到空值（2026-10-04 其他出库 docNo）。事件指向的插件实例在 `request.plugin_id / plugin_agent_id / symbol`，复制应用后会仍指向原应用的插件实例。
 - **插件函数参数模板**：开放平台保存函数走 `/open/owner/plugin/trigger/update {plugin_id, symbol, runtime, source_code, arguments_template | return_template, key, iv}`，每次只带当前页那一份模板，但服务端会把另一份按页面缓存一起覆盖——要改两份时拦截一次保存、同时写入 `arguments_template` 与 `return_template`；读回用 `/open/owner/plugin/trigger/list {plugin_id}`。导入包建出的插件缺子表单入参 / 对象数组出参，可照此从同构插件复制模板。
 - R3 提交表单时**每次**都要先把成员 / 部门默认值转 ID（见上），否则「当前用户」类默认值被清空——只改 formEvents 也一样。

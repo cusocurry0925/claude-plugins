@@ -1,6 +1,0 @@
-{
-  "name": "jiandaoyun-chrome",
-  "description": "简道云后台配置批量操作：通过已登录的 Chrome 会话调用网页端内部接口，读取 / 修改表单字段、流程、聚合表、智能助手、仪表盘、数据推送、数据工厂",
-  "author": { "name": "cuso0925" },
-  "keywords": ["jiandaoyun", "简道云", "chrome", "admin", "workflow", "aggregate"]
-}

@@ -1,4 +1,6 @@
-# 简道云内部接口清单（2026-10 实测，钉钉版 dingtalk.jiandaoyun.com）
+# 简道云内部接口清单（2026-10 实测，钉钉版简道云）
+
+钉钉版租户，内置浏览器经 `www.jiandaoyun.com` 访问；读取类接口 2026-10-23 在内置浏览器中用 recipes「R14」复测。
 
 通用：`POST`，`content-type: application/json`，`x-csrf-token: <meta[name=csrf-token]>`。
 不要同时带 meta 的 `x-csrf-token` 和设计器抓到的 `X-CSRF-Token`（会 402）。`{app}` = 应用 ID，`{entry}` = 表单 ID。
@@ -6,7 +8,8 @@
 ## 应用 / 菜单
 | 用途 | 接口 | 请求体 | 备注 |
 |---|---|---|---|
-| 菜单（全部表单、仪表盘及 ID） | `/_/app/{app}/menu` | `{}` | 遍历 `type=form` / `type=dash`，ID 取 `entryId‖_id` |
+| 应用列表 | 无接口；工作台 `/dashboard` 页面 DOM | — | `a[href*="#/app/"]` 取 24 位应用 ID 与名称（recipes R0） |
+| 菜单（全部表单、仪表盘及 ID） | `/_/app/{app}/menu` | `{}` | 返回 `{entryList, entryMap, hasFlowMenu, homeList}`：`entryList` 只是目录树（`{id, child[]}`，不含名称）；表单 / 仪表盘取 `entryMap` 的值（`{type: form‖dash‖group, name, entryId, _id}`），ID 取 `entryId‖_id`；`homeList` 是首页置顶项 |
 | 应用信息 | `/_/app/{app}/info_get` | `{}` | |
 
 ## 表单
@@ -33,7 +36,7 @@
 ## 仪表盘
 | 用途 | 接口 | 请求体 |
 |---|---|---|
-| 读 | `/_/admin/app/{app}/dash/{id}/edit` | `{}` |
+| 读 | `/_/admin/app/{app}/dash/{id}/edit` | `{}`（返回 `{_id, appId, entryId, name, components, styles, mobileStyles, attr, checkConfig}`；`components` 是以组件 ID 为键的对象，不是数组） |
 | 写 | `/_/admin/app/{app}/dash/{id}/update` | `{components, styles, mobileStyles}` |
 
 图表字段对象形如 `{name:"_widget_x", form, type, title}`。
@@ -68,7 +71,7 @@ HTTP 触发助手的 webhook 地址：`https://api.jiandaoyun.com/api/v1/automat
 | 列表 | `/_/admin/app/webhook/list` | `{appId, limit, skip}` |
 | 新建 | `/_/admin/workflow/webhook/create` | `{appId, entryId, webhook:{mode:"custom", url, triggers:["process_update"], type:"flow", name, remark, secret}}` |
 | 推送日志 | `/_/admin/workflow/webhook/logs` | `{status:"success"‖"failed", limit, skip, appId, entryId, webhookId}` |
-| 表单字段（推送配置页用） | `/_/admin/app/{app}/entry/{entry}/webhook/form_item/get` | |
+| 表单字段（推送配置页用） | `/_/admin/app/{app}/entry/{entry}/webhook/form_item/get` | `{}` |
 
 `type:"flow"` + `process_update` = 「流程变更时推送·流程状态变更时」。
 
