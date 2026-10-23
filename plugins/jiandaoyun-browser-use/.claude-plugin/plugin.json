@@ -1,6 +1,6 @@
 {
   "name": "jiandaoyun-browser-use",
   "description": "简道云后台配置批量操作：在 Claude 桌面 App 内置浏览器里已登录的简道云页面调用网页端内部接口，读取 / 修改表单字段、流程、聚合表、智能助手、仪表盘、数据推送、数据工厂",
-  "author": { "name": "cuso0925" },
+  "author": { "name": "cusocurry0925" },
   "keywords": ["jiandaoyun", "简道云", "browser-use", "built-in-browser", "admin", "workflow", "aggregate"]
 }

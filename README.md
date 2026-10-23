@@ -1,4 +1,4 @@
-# cuso0925-plugins
+# cusocurry0925-plugins
 
 个人 Claude 插件市场。
 
@@ -15,13 +15,13 @@
 在 Claude Code 中：
 
 ```
-/plugin marketplace add cuso0925/claude-plugins
-/plugin install jiandaoyun-integration-guide@cuso0925-plugins
-/plugin install jiandaoyun-support@cuso0925-plugins
-/plugin install jiandaoyun-browser-use@cuso0925-plugins
+/plugin marketplace add cusocurry0925/claude-plugins
+/plugin install jiandaoyun-integration-guide@cusocurry0925-plugins
+/plugin install jiandaoyun-support@cusocurry0925-plugins
+/plugin install jiandaoyun-browser-use@cusocurry0925-plugins
 ```
 
-`jiandaoyun-browser-use` 原名 `jiandaoyun-chrome`（2026-10-23 改名，并从 Claude in Chrome 改为内置浏览器）。`marketplace.json` 里的 `renames` 会把已安装的旧名迁移到新名；如提示 `not cached`，执行一次 `/plugin install jiandaoyun-browser-use@cuso0925-plugins`。
+`jiandaoyun-browser-use` 原名 `jiandaoyun-chrome`（2026-10-23 改名，并从 Claude in Chrome 改为内置浏览器）。`marketplace.json` 里的 `renames` 会把已安装的旧名迁移到新名；如提示 `not cached`，执行一次 `/plugin install jiandaoyun-browser-use@cusocurry0925-plugins`。
 
 ## 来源与版权
 

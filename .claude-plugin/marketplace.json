@@ -1,8 +1,8 @@
 {
-  "name": "cuso0925-plugins",
-  "description": "cuso0925 的个人 Claude 插件市场",
+  "name": "cusocurry0925-plugins",
+  "description": "cusocurry0925 的个人 Claude 插件市场",
   "owner": {
-    "name": "cuso0925"
+    "name": "cusocurry0925"
   },
   "plugins": [
     {
